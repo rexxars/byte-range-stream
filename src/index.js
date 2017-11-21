@@ -30,6 +30,7 @@ function ByteRangeStream(options) {
   this._valueLength = 0
   this._options = {}
   this._numChunks = 0
+  this._ranges = null
 
   CombinedStream.call(this)
 
@@ -37,20 +38,20 @@ function ByteRangeStream(options) {
     this._options[option] = options[option]
   }
 
-  const ranges = parseRange(options.totalSize, options.range)
-  if (!Array.isArray(ranges)) {
+  this._ranges = parseRange(options.totalSize, options.range)
+  if (!Array.isArray(this._ranges)) {
     this._isSatisfiable = false
-    this._isValid = ranges !== -2
+    this._isValid = this._ranges !== -2
     return this
   }
 
-  if (ranges.type !== 'bytes') {
+  if (this._ranges.type !== 'bytes') {
     this._isValid = false
     return this
   }
 
-  const lastIndex = ranges.length - 1
-  ranges.forEach((range, i) => {
+  const lastIndex = this._ranges.length - 1
+  this._ranges.forEach((range, i) => {
     const isLast = i === lastIndex
     this._append(range, next => next(this._options.getChunk(range.start, range.end)), isLast)
     this._numChunks++
@@ -68,6 +69,58 @@ ByteRangeStream.prototype.isValid = function() {
 
 ByteRangeStream.prototype.isSatisfiable = function() {
   return this._isSatisfiable
+}
+
+ByteRangeStream.prototype.getRanges = function() {
+  return this._ranges
+}
+
+ByteRangeStream.prototype.getHeaders = function() {
+  return {
+    'Content-Type': `multipart/byteranges; boundary=${this.getBoundary()}`,
+    'Content-Length': this.getLength()
+  }
+}
+
+ByteRangeStream.prototype.getBoundary = function() {
+  if (!this._boundary) {
+    this._generateBoundary()
+  }
+
+  return this._boundary
+}
+
+ByteRangeStream.prototype.getChunkCount = function() {
+  return this._numChunks
+}
+
+ByteRangeStream.prototype.getLength = function() {
+  let knownLength = this._overheadLength + this._valueLength
+
+  if (this._numChunks > 0) {
+    knownLength += this._lastBoundary().length
+  }
+
+  return knownLength
+}
+
+ByteRangeStream.prototype.toString = function() {
+  return '[object ByteRangeStream]'
+}
+
+// ==================================
+// ===        INTERNALS           ===
+// ==================================
+
+ByteRangeStream.prototype._generateBoundary = function() {
+  // This generates a 50 character boundary similar to those used by Firefox.
+  // They are optimized for boyer-moore parsing.
+  let boundary = '--------------------------'
+  for (let i = 0; i < 24; i++) {
+    boundary += Math.floor(Math.random() * 10).toString(16)
+  }
+
+  this._boundary = boundary
 }
 
 ByteRangeStream.prototype._append = function(range, stream, isLast) {
@@ -117,50 +170,6 @@ ByteRangeStream.prototype._multiPartFooter = function(isLast) {
 
 ByteRangeStream.prototype._lastBoundary = function() {
   return [this.getBoundary(), '--', ByteRangeStream.LINE_BREAK].join('')
-}
-
-ByteRangeStream.prototype.getHeaders = function() {
-  return {
-    'Content-Type': `multipart/byteranges; boundary=${this.getBoundary()}`,
-    'Content-Length': this.getLength()
-  }
-}
-
-ByteRangeStream.prototype.getBoundary = function() {
-  if (!this._boundary) {
-    this._generateBoundary()
-  }
-
-  return this._boundary
-}
-
-ByteRangeStream.prototype._generateBoundary = function() {
-  // This generates a 50 character boundary similar to those used by Firefox.
-  // They are optimized for boyer-moore parsing.
-  let boundary = '--------------------------'
-  for (let i = 0; i < 24; i++) {
-    boundary += Math.floor(Math.random() * 10).toString(16)
-  }
-
-  this._boundary = boundary
-}
-
-ByteRangeStream.prototype.getNumberOfChunks = function() {
-  return this._numChunks
-}
-
-ByteRangeStream.prototype.getLength = function() {
-  let knownLength = this._overheadLength + this._valueLength
-
-  if (this._numChunks > 0) {
-    knownLength += this._lastBoundary().length
-  }
-
-  return knownLength
-}
-
-ByteRangeStream.prototype.toString = function() {
-  return '[object ByteRangeStream]'
 }
 
 function validateOptions(opts) {

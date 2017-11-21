@@ -93,11 +93,11 @@ test('returns valid headers on multiple chunks', () => {
 })
 
 test('returns valid number of chunks on single chunk', () => {
-  expect(BRS(options).getNumberOfChunks()).toEqual(1)
+  expect(BRS(options).getChunkCount()).toEqual(1)
 })
 
 test('returns valid number of chunks on multiple chunks', () => {
-  expect(BRS(addOption('range', 'bytes=0-5, 5-10,15-30')).getNumberOfChunks()).toEqual(3)
+  expect(BRS(addOption('range', 'bytes=0-5, 5-10,15-30')).getChunkCount()).toEqual(3)
 })
 
 test('streams correct chunk on single chunk', () => {

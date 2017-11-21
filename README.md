@@ -15,58 +15,41 @@ npm install --save byte-range-stream
 ```js
 const fs = require('fs')
 const path = require('path')
-const pump = require('pump')
-const ByteRangeStream = require('byte-range-stream')
-const express = require('express')
-const app = express()
+const ByteRangeStream = require('../')
 
 const filePath = path.join(__dirname, 'example.js')
 const totalSize = fs.statSync(filePath).size
+const getChunk = (start, end) => fs.createReadStream(filePath, {start, end})
 
-function getChunk(start, end) {
-  return fs.createReadStream(filePath, {start, end})
+const byteStream = new ByteRangeStream({
+  range: 'bytes=0-100',
+  getChunk,
+  totalSize,
+  contentType: 'text/javascript'
+})
+
+// Invalid could mean unsupported range type (only "bytes" is supported)
+// or incorrect syntax
+if (!byteStream.isValid()) {
+  console.log('Invalid')
 }
 
-app.get('/somefile.txt', (req, res) => {
-  // Flag that we accept range requests
-  res.set('Accept-Ranges', 'bytes')
+// Unsatisfiable could mean out of range
+if (!byteStream.isSatisfiable()) {
+  console.log('Unsatisfiable')
+}
 
-  // Create a new byte-range stream
-  const byteStream = new ByteRangeStream({
-    range: req.headers.range || '',
-    getChunk,
-    totalSize,
-    contentType: 'text/javascript'
-  })
+// You will need the generated boundary for the multipart response,
+// as well as content length
+const headers = byteStream.getHeaders()
 
-  // If the client didn't specify a range or the range header was invalid, stream the entire file
-  if (!byteStream.isValid()) {
-    pump(fs.createReadStream(filePath), res)
-    return
-  }
+process.stdout.write('206 Partial Content\n\n')
+for (const header in headers) {
+  process.stdout.write(`${header}: ${headers[header]}\n`)
+}
 
-  // If the byte stream is not satisfiable (out of range etc), return a 416
-  if (!byteStream.isSatisfiable()) {
-    res
-      .status(416)
-      .set('Content-Range', `bytes */${totalSize}`)
-      .end()
-    return
-  }
-
-  // If a range was specified, indicate this is a partial response
-  res.status(206)
-
-  // We need to set some headers to indicate the boundary and content type
-  res.set(byteStream.getHeaders())
-
-  // Now stream the response to the HTTP response stream
-  pump(byteStream, res)
-})
-
-app.listen(3000, () => {
-  console.log('Example app listening on port 3000!')
-})
+process.stdout.write('\n')
+byteStream.pipe(process.stdout)
 ```
 
 ## License
