@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`throws on invalid \`contentType\` 1`] = `"\`contentType\` must be a string"`;
+
+exports[`throws on missing/invalid \`getChunk\` 1`] = `"\`getChunk\` must be a function"`;
+
+exports[`throws on missing/invalid \`getChunk\` 2`] = `"\`getChunk\` must be a function"`;
+
+exports[`throws on missing/invalid \`range\` 1`] = `"\`range\` must be a string"`;
+
+exports[`throws on missing/invalid \`range\` 2`] = `"\`range\` must be a string"`;
+
+exports[`throws on missing/invalid \`range\` 3`] = `"\`range\` must be a string"`;
+
+exports[`throws on missing/invalid \`totalSize\` 1`] = `"\`totalSize\` must be a number"`;
+
+exports[`throws on missing/invalid \`totalSize\` 2`] = `"\`totalSize\` must be a number"`;
