@@ -1,6 +1,6 @@
 {
   "name": "byte-range-stream",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Create a multipart/byteranges stream based on passed ranges",
   "main": "src/index.js",
   "scripts": {
@@ -13,7 +13,12 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "keywords": ["byteranges", "multipart", "multi-part", "range"],
+  "keywords": [
+    "byteranges",
+    "multipart",
+    "multi-part",
+    "range"
+  ],
   "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
   "license": "MIT",
   "bugs": {
@@ -34,5 +39,7 @@
     "combined-stream": "^1.0.5",
     "range-parser": "^1.2.0"
   },
-  "files": ["src/"]
+  "files": [
+    "src/"
+  ]
 }
