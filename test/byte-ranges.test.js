@@ -33,7 +33,7 @@ const without = (obj, prop) =>
 
 const options = {
   range: 'bytes=0-17',
-  getChunk: (start, end) => fs.createReadStream(fixturePath, {start, end}),
+  getChunk: range => fs.createReadStream(fixturePath, range),
   totalSize: fs.statSync(fixturePath).size
 }
 

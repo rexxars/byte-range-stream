@@ -21,7 +21,7 @@ const ByteRangeStream = require('../')
 
 const filePath = path.join(__dirname, 'example.js')
 const totalSize = fs.statSync(filePath).size
-const getChunk = (start, end) => fs.createReadStream(filePath, {start, end})
+const getChunk = range => fs.createReadStream(filePath, {start: range.start, end: range.end})
 
 const byteStream = new ByteRangeStream({
   range: 'bytes=0-100',
