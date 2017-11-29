@@ -1,6 +1,6 @@
 {
   "name": "byte-range-stream",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Create a multipart/byteranges stream based on passed ranges",
   "main": "src/index.js",
   "scripts": {
