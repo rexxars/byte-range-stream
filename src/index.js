@@ -53,8 +53,8 @@ function ByteRangeStream(options) {
   const lastIndex = this._ranges.length - 1
   this._ranges.forEach((range, i) => {
     const isLast = i === lastIndex
-    this._append(range, next => next(this._options.getChunk(range)), isLast)
     this._numChunks++
+    this._append(range, next => Promise.resolve(this._options.getChunk(range)).then(next), isLast)
   })
 
   return this
