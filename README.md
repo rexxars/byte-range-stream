@@ -17,7 +17,7 @@ npm install --save byte-range-stream
 ```js
 const fs = require('fs')
 const path = require('path')
-const ByteRangeStream = require('../')
+const ByteRangeStream = require('byte-range-stream')
 
 const filePath = path.join(__dirname, 'example.js')
 const totalSize = fs.statSync(filePath).size
