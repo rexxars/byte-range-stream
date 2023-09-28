@@ -21,13 +21,13 @@ const ByteRangeStream = require('byte-range-stream')
 
 const filePath = path.join(__dirname, 'example.js')
 const totalSize = fs.statSync(filePath).size
-const getChunk = range => fs.createReadStream(filePath, {start: range.start, end: range.end})
+const getChunk = (range) => fs.createReadStream(filePath, {start: range.start, end: range.end})
 
 const byteStream = new ByteRangeStream({
   range: 'bytes=0-100',
   getChunk,
   totalSize,
-  contentType: 'text/javascript'
+  contentType: 'text/javascript',
 })
 
 // Invalid could mean unsupported range type (only "bytes" is supported)

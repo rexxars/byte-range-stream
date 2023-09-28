@@ -54,7 +54,7 @@ function ByteRangeStream(options) {
   this._ranges.forEach((range, i) => {
     const isLast = i === lastIndex
     this._numChunks++
-    this._append(range, next => Promise.resolve(this._options.getChunk(range)).then(next), isLast)
+    this._append(range, (next) => Promise.resolve(this._options.getChunk(range)).then(next), isLast)
   })
 
   return this
@@ -63,26 +63,26 @@ function ByteRangeStream(options) {
 ByteRangeStream.LINE_BREAK = '\r\n'
 ByteRangeStream.DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
-ByteRangeStream.prototype.isValid = function() {
+ByteRangeStream.prototype.isValid = function () {
   return this._isValid
 }
 
-ByteRangeStream.prototype.isSatisfiable = function() {
+ByteRangeStream.prototype.isSatisfiable = function () {
   return this._isSatisfiable
 }
 
-ByteRangeStream.prototype.getRanges = function() {
+ByteRangeStream.prototype.getRanges = function () {
   return this._ranges
 }
 
-ByteRangeStream.prototype.getHeaders = function() {
+ByteRangeStream.prototype.getHeaders = function () {
   return {
     'Content-Type': `multipart/byteranges; boundary=${this.getBoundary()}`,
-    'Content-Length': this.getLength()
+    'Content-Length': this.getLength(),
   }
 }
 
-ByteRangeStream.prototype.getBoundary = function() {
+ByteRangeStream.prototype.getBoundary = function () {
   if (!this._boundary) {
     this._generateBoundary()
   }
@@ -90,11 +90,11 @@ ByteRangeStream.prototype.getBoundary = function() {
   return this._boundary
 }
 
-ByteRangeStream.prototype.getChunkCount = function() {
+ByteRangeStream.prototype.getChunkCount = function () {
   return this._numChunks
 }
 
-ByteRangeStream.prototype.getLength = function() {
+ByteRangeStream.prototype.getLength = function () {
   let knownLength = this._overheadLength + this._valueLength
 
   if (this._numChunks > 0) {
@@ -104,7 +104,7 @@ ByteRangeStream.prototype.getLength = function() {
   return knownLength
 }
 
-ByteRangeStream.prototype.toString = function() {
+ByteRangeStream.prototype.toString = function () {
   return '[object ByteRangeStream]'
 }
 
@@ -112,7 +112,7 @@ ByteRangeStream.prototype.toString = function() {
 // ===        INTERNALS           ===
 // ==================================
 
-ByteRangeStream.prototype._generateBoundary = function() {
+ByteRangeStream.prototype._generateBoundary = function () {
   // This generates a 50 character boundary similar to those used by Firefox.
   // They are optimized for boyer-moore parsing.
   let boundary = '--------------------------'
@@ -123,7 +123,7 @@ ByteRangeStream.prototype._generateBoundary = function() {
   this._boundary = boundary
 }
 
-ByteRangeStream.prototype._append = function(range, stream, isLast) {
+ByteRangeStream.prototype._append = function (range, stream, isLast) {
   const append = CombinedStream.prototype.append.bind(this)
 
   const header = this._multiPartHeader(range, stream)
@@ -136,16 +136,16 @@ ByteRangeStream.prototype._append = function(range, stream, isLast) {
   this._trackLength(header, range)
 }
 
-ByteRangeStream.prototype._trackLength = function(header, range) {
+ByteRangeStream.prototype._trackLength = function (header, range) {
   this._valueLength += range.end - range.start + 1
   this._overheadLength += Buffer.byteLength(header) + ByteRangeStream.LINE_BREAK.length
 }
 
-ByteRangeStream.prototype._multiPartHeader = function(range, stream) {
+ByteRangeStream.prototype._multiPartHeader = function (range, stream) {
   const contentType = this._options.contentType || ByteRangeStream.DEFAULT_CONTENT_TYPE
   const contentRange = contentRangeString('bytes', this._options.totalSize, range)
   const contents = [`Content-Type: ${contentType}`, `Content-Range: ${contentRange}`].join(
-    ByteRangeStream.LINE_BREAK
+    ByteRangeStream.LINE_BREAK,
   )
 
   return [
@@ -154,11 +154,11 @@ ByteRangeStream.prototype._multiPartHeader = function(range, stream) {
     ByteRangeStream.LINE_BREAK,
     contents,
     ByteRangeStream.LINE_BREAK,
-    ByteRangeStream.LINE_BREAK
+    ByteRangeStream.LINE_BREAK,
   ].join('')
 }
 
-ByteRangeStream.prototype._multiPartFooter = function(isLast) {
+ByteRangeStream.prototype._multiPartFooter = function (isLast) {
   let footer = ByteRangeStream.LINE_BREAK
 
   if (isLast) {
@@ -168,7 +168,7 @@ ByteRangeStream.prototype._multiPartFooter = function(isLast) {
   return footer
 }
 
-ByteRangeStream.prototype._lastBoundary = function() {
+ByteRangeStream.prototype._lastBoundary = function () {
   return [this.getBoundary(), '--', ByteRangeStream.LINE_BREAK].join('')
 }
 

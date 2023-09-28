@@ -21,7 +21,7 @@ app.get('/somefile.txt', (req, res) => {
     range: req.headers.range || '',
     getChunk,
     totalSize,
-    contentType: 'text/javascript'
+    contentType: 'text/javascript',
   })
 
   // If the client didn't specify a range or the range header was invalid, stream the entire file
@@ -32,10 +32,7 @@ app.get('/somefile.txt', (req, res) => {
 
   // If the byte stream is not satisfiable (out of range etc), return a 416
   if (!byteStream.isSatisfiable()) {
-    res
-      .status(416)
-      .set('Content-Range', contentRange('bytes', totalSize))
-      .end()
+    res.status(416).set('Content-Range', contentRange('bytes', totalSize)).end()
     return
   }
 
