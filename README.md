@@ -1,6 +1,6 @@
 # byte-range-stream
 
-[![npm version](http://img.shields.io/npm/v/byte-range-stream.svg?style=flat-square)](http://browsenpm.org/package/byte-range-stream)[![Build Status](http://img.shields.io/travis/rexxars/byte-range-stream/master.svg?style=flat-square)](https://travis-ci.org/rexxars/byte-range-stream)
+[![npm version](http://img.shields.io/npm/v/byte-range-stream.svg?style=flat-square)](http://browsenpm.org/package/byte-range-stream)
 
 Create a multipart/byteranges stream based on passed ranges.
 

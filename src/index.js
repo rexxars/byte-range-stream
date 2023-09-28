@@ -137,7 +137,7 @@ ByteRangeStream.prototype._append = function(range, stream, isLast) {
 }
 
 ByteRangeStream.prototype._trackLength = function(header, range) {
-  this._valueLength += range.end - range.start
+  this._valueLength += range.end - range.start + 1
   this._overheadLength += Buffer.byteLength(header) + ByteRangeStream.LINE_BREAK.length
 }
 

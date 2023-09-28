@@ -78,7 +78,7 @@ test('flagged as invalid on unsatisfiable range', () => {
 
 test('returns valid headers', () => {
   const headers = BRS(options).getHeaders()
-  expect(headers).toHaveProperty('Content-Length', 199)
+  expect(headers).toHaveProperty('Content-Length', 200)
   expect(headers['Content-Type']).toMatch(
     /^multipart\/byteranges; boundary=--------------------------\d+$/
   )
@@ -86,7 +86,7 @@ test('returns valid headers', () => {
 
 test('returns valid headers on multiple chunks', () => {
   const headers = BRS(addOption('range', 'bytes=0-5, 5-10')).getHeaders()
-  expect(headers).toHaveProperty('Content-Length', 319)
+  expect(headers).toHaveProperty('Content-Length', 321)
   expect(headers['Content-Type']).toMatch(
     /^multipart\/byteranges; boundary=--------------------------\d+$/
   )
