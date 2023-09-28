@@ -24,7 +24,3 @@ build/Release
 
 # Dependency directories
 node_modules
-
-# Lockfiles
-package-lock.json
-yarn.lock
